@@ -1,0 +1,58 @@
+﻿<Window x:Class="CommandRecognition.UI.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:viewmodel="clr-namespace:CommandRecognition.UI.ViewModel"
+        xmlns:local="clr-namespace:CommandRecognition.UI.View"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="MainView" Height="450" Width="400" FontSize="16">
+
+    <materialDesign:DialogHost Style="{StaticResource MaterialDesignEmbeddedDialogHost}" 
+                               Background="#17212B" BindingGroup="{Binding SelectedRecCommand}"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                               IsOpen="{Binding IsOpenDialog}">
+        <materialDesign:DialogHost.DialogContent>
+            <StackPanel Margin="30">
+                <TextBox Text="{Binding SelectedRecCommand.Command}" FontSize="16" materialDesign:HintAssist.Hint="Команда" Margin="0 5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+                <TextBox Text="{Binding SelectedRecCommand.Path}" FontSize="16" materialDesign:HintAssist.Hint="Путь" Margin="0 5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+                <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 20">
+                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Foreground="Gray" Content="Отмена" Margin="10 0"
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
+                    <Button Command="{Binding EditItem}" Style="{StaticResource MaterialDesignOutlinedButton}" Foreground="YellowGreen" Content="Добавить" Margin="10 0" />
+                </StackPanel>
+            </StackPanel>
+        </materialDesign:DialogHost.DialogContent>
+
+        <!--основное окно-->
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="60" />
+            </Grid.RowDefinitions>
+
+            <ListView Grid.Row="0" ItemsSource="{Binding RecCommand}" 
+                  SelectedItem="{Binding SelectedRecCommand}" SelectedIndex="{Binding SelectedIndex}"
+                  VirtualizingPanel.ScrollUnit="Pixel" x:Name="ListView1">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="{Binding Id, StringFormat={} Id: {0}}" />
+                            <TextBlock Text="{Binding UserId, StringFormat={} UserID: {0}}" />
+                            <TextBlock Text="{Binding Command, StringFormat={} Command: {0}}" />
+                            <TextBlock Text="{Binding Path, StringFormat={} Path: {0}}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{Binding OpedDialog}" CommandParameter="insert" Content="Добавить" Margin="10 0" />
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{Binding OpedDialog}" CommandParameter="edit" Content="Изменить" Foreground="YellowGreen" Margin="10 0" />
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{Binding DeleteItem}" Content="Удалить" Foreground="Red" Margin="10 0" />
+            </StackPanel>
+        </Grid>
+    </materialDesign:DialogHost>
+</Window>

@@ -1,0 +1,72 @@
+﻿<Window x:Class="CommandRecognition.UI.View.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:databinding="clr-namespace:CommandRecognition.UI.Converts"
+        xmlns:local="clr-namespace:CommandRecognition.UI.View"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="Авторизация" Height="300" Width="400"
+        FontSize="16" WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <databinding:LoginConvert x:Key="LoginConvert" />
+        <!-- Кнопка в Popup menu -->
+        <Style x:Key="button" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+            <Setter Property="Content" Value="Закрыть" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Visibility}" Value="Collapsed">
+                    <Setter Property="Window.Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Visibility}" Value="Visible">
+                    <Setter Property="Window.Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <!-- TextBlock сообщения об ошибке -->
+        <Style x:Key="erroeMessage" TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Visibility}" Value="Collapsed">
+                    <Setter Property="Window.Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Visibility}" Value="Visible">
+                    <Setter Property="Window.Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <materialDesign:DialogHost IsOpen="{Binding IsShow}"
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center">
+        <materialDesign:DialogHost.DialogContent>
+            <StackPanel Margin="16">
+                <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                             HorizontalAlignment="Center"
+                             Margin="16" Visibility="{Binding Visibility}"
+                             IsIndeterminate="True"
+                             Value="0" />
+                <TextBlock HorizontalAlignment="Stretch" Text="{Binding ErrorMessage}" Margin="0 10" FontSize="16"
+                           Style="{StaticResource erroeMessage}" />
+                <Button Command="materialDesign:DialogHost.CloseDialogCommand"
+                        Style="{StaticResource button}" />
+            </StackPanel>
+        </materialDesign:DialogHost.DialogContent>
+
+        <StackPanel Margin="20" VerticalAlignment="Center">
+            <TextBox x:Name="login" Text="{Binding Login}" materialDesign:HintAssist.Hint="Логин" Margin="0 5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+            <PasswordBox x:Name="pass" materialDesign:HintAssist.Hint="Пароль" Margin="0 5" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" />
+            <StackPanel Orientation="Horizontal" Margin="0 50 0 0">
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" Content="Регистрация" Command="{Binding RegisterCommand}" />
+                <Button Width="200" Margin="20" HorizontalAlignment="Right" Content="Войти" Command="{Binding LoginCommand}" IsDefault="True">
+                    <Button.CommandParameter>
+                        <MultiBinding Converter="{StaticResource LoginConvert}">
+                            <Binding ElementName="pass"/>
+                        </MultiBinding>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </materialDesign:DialogHost>
+</Window>

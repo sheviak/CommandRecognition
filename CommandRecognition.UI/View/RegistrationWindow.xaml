@@ -1,0 +1,32 @@
+﻿<Window x:Class="CommandRecognition.UI.View.RegistrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" WindowStartupLocation="CenterOwner"
+        Title="Регистрация" Height="410" Width="400" FontSize="16"
+        xmlns:databinding="clr-namespace:CommandRecognition.UI.Converts"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    
+    <Window.Resources>
+        <databinding:RegistrationConvert x:Key="RegistrationConvert" />
+    </Window.Resources>
+
+    <Grid>
+        <StackPanel Margin="20">
+            <TextBox x:Name="login" Text="{Binding Login}" materialDesign:HintAssist.Hint="Логин" Margin="0 5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+            <PasswordBox x:Name="pass" materialDesign:HintAssist.Hint="Пароль" Margin="0 5" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" />
+            <PasswordBox x:Name="confPass" materialDesign:HintAssist.Hint="Повторите пароль" Margin="0 5" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" />
+            <TextBox x:Name="quastion" Text="{Binding Question}" materialDesign:HintAssist.Hint="Контрольный вопрос" Margin="0 5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+            <TextBox x:Name="answer" Text="{Binding Answer}" materialDesign:HintAssist.Hint="Ответ на вопрос" Margin="0 5" Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+            <Button Width="200" Margin="20" HorizontalAlignment="Right" Content="Зарегистрироваться" Command="{Binding RegisterCommand}">
+                <Button.CommandParameter>
+                    <MultiBinding Converter="{StaticResource RegistrationConvert}">
+                        <Binding ElementName="pass"/>
+                        <Binding ElementName="confPass"/>
+                    </MultiBinding>
+                </Button.CommandParameter>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>
