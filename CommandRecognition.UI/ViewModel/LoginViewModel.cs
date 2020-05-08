@@ -1,6 +1,7 @@
 ﻿using CommandRecognition.BL.Interfaces;
 using CommandRecognition.UI.Command;
 using CommandRecognition.UI.View;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,8 +25,10 @@ namespace CommandRecognition.UI.ViewModel
 
         public ICommand _loginCommand;
         public ICommand _registerCommand;
+        public ICommand _resetCommand;
         public ICommand LoginCommand { get { return _loginCommand ?? (_loginCommand = new DelegateCommand<object>(a => OnLoginCommand(a))); } }
         public ICommand RegisterCommand { get { return _registerCommand ?? (_registerCommand = new DelegateCommand<object>(a => OnRegisterCommand())); } }
+        public ICommand ResetCommand { get { return _resetCommand ?? (_resetCommand = new DelegateCommand<object>(a => OnResetCommand())); } }
 
         private IAccountServices _accountServices;
         public LoginViewModel(IAccountServices accountServices)
@@ -50,7 +53,8 @@ namespace CommandRecognition.UI.ViewModel
             {
                 Visibility = Visibility.Collapsed;
                 ErrorMessage = "Проверьте введенные данные!";
-            } else
+            } 
+            else
             {
                 var mainView = new MainWindow();
                 var mainViewModel = IocKernel.IocKernel.Get<MainViewModel>();
@@ -65,6 +69,12 @@ namespace CommandRecognition.UI.ViewModel
         {
             var registerWindow = new RegistrationWindow();
             registerWindow.ShowDialog();
+        }
+
+        private void OnResetCommand()
+        {
+            var resetWindow = new ResetPasswordWindow();
+            resetWindow.ShowDialog();
         }
     }
 }

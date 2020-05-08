@@ -42,7 +42,7 @@ namespace CommandRecognition.UI.ViewModel
 
         public MainViewModel(IDataServices dataServices)
         {
-            _dataServices = dataServices; // IocKernel.Get<IDataServices>();
+            _dataServices = dataServices;
         }
 
         public void Initialize(int userId)
@@ -63,7 +63,7 @@ namespace CommandRecognition.UI.ViewModel
                 _sre.SetInputToDefaultAudioDevice();
 
                 // load grammar
-                _sre.LoadGrammar(CreateSampleGrammar1());
+                _sre.LoadGrammar(CreateSampleGrammarStart());
                 _sre.LoadGrammar(CreateSampleGrammarClose());
 
                 // start recognition
@@ -149,7 +149,7 @@ namespace CommandRecognition.UI.ViewModel
          */
 
         
-        private Grammar CreateSampleGrammar1()
+        private Grammar CreateSampleGrammarStart()
         {
             var grammarBuilder = new GrammarBuilder("запустить", SubsetMatchingMode.SubsequenceContentRequired);
             grammarBuilder.Culture = _culture;

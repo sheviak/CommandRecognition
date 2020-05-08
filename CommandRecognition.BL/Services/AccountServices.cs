@@ -31,7 +31,7 @@ namespace CommandRecognition.BL.Services
                         pass = pass.Trim();
                         confPass = confPass.Trim();
                         question = question.Trim();
-                        answer = answer.Trim();
+                        answer = answer.Trim().ToUpper();
 
                         var hashPass = HashPassword(login, pass);
 
@@ -97,6 +97,20 @@ namespace CommandRecognition.BL.Services
                 if (password == confPassword)
                     return true;
             return false;
+        }
+
+        public (bool result, User user) CheckUserLogin(string login)
+        {
+            var user = _unitOfWork.Repository<User>().Get(x => x.Login == login);
+
+            return user == null ? (result: false, user: null) : (result: true, user: user);
+        }
+
+        public void ChangePassword(User user, string newpass)
+        {
+            user.Password = HashPassword(user.Login, newpass);
+            _unitOfWork.Repository<User>().Update(user);
+            //return (status: true, message: "Пароль был успешно изменен!");
         }
     }
 }
