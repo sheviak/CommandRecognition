@@ -58,7 +58,8 @@ namespace CommandRecognition.UI.ViewModel
             {
                 var mainView = new MainWindow();
                 var mainViewModel = IocKernel.IocKernel.Get<MainViewModel>();
-                mainViewModel.Initialize(user.Id);
+                mainViewModel.UserId = user.Id;
+                mainViewModel.Initialize();
                 mainView.DataContext = mainViewModel;
                 mainView.Show();
                 this.CloseAction();

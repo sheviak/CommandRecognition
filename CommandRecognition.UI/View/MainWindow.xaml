@@ -7,7 +7,7 @@
         xmlns:viewmodel="clr-namespace:CommandRecognition.UI.ViewModel"
         xmlns:local="clr-namespace:CommandRecognition.UI.View"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="MainView" Height="450" Width="400" FontSize="16">
+        Title="Команды" Height="450" Width="430" FontSize="16">
 
     <materialDesign:DialogHost Style="{StaticResource MaterialDesignEmbeddedDialogHost}" 
                                Background="#17212B" BindingGroup="{Binding SelectedRecCommand}"
@@ -39,16 +39,19 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="{Binding Id, StringFormat={} Id: {0}}" />
-                            <TextBlock Text="{Binding UserId, StringFormat={} UserID: {0}}" />
-                            <TextBlock Text="{Binding Command, StringFormat={} Command: {0}}" />
-                            <TextBlock Text="{Binding Path, StringFormat={} Path: {0}}" />
+                            <!--<TextBlock Text="{Binding Id, StringFormat={} Id: {0}}" />-->
+                            <!--<TextBlock Text="{Binding UserId, StringFormat={} UserID: {0}}" />-->
+                            <TextBlock Text="{Binding Command, StringFormat={} Команда: {0}}" />
+                            <TextBlock Text="{Binding Path, StringFormat={} Путь: {0}}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{Binding OpenSettings}" CommandParameter="insert" Margin="10 0">
+                    <materialDesign:PackIcon Kind="Settings" Height="24" Width="24" />
+                </Button>
                 <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{Binding OpedDialog}" CommandParameter="insert" Content="Добавить" Margin="10 0" />
                 <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{Binding OpedDialog}" CommandParameter="edit" Content="Изменить" Foreground="YellowGreen" Margin="10 0" />
                 <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{Binding DeleteItem}" Content="Удалить" Foreground="Red" Margin="10 0" />

@@ -1,6 +1,7 @@
 ﻿using CommandRecognition.BL.Interfaces;
 using CommandRecognition.CORE;
 using CommandRecognition.UI.Command;
+using CommandRecognition.UI.View;
 using Microsoft.Speech.Recognition;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -21,7 +20,9 @@ namespace CommandRecognition.UI.ViewModel
         private SpeechRecognitionEngine _sre;
         private Choices programs = new Choices();
 
-        private int _userId; // Id пользователя
+        private int _userId;
+        public int UserId { get => _userId; set => SetField(ref _userId, value); } // Id пользователя
+
         private bool? Flag = null; // флаг установки добавление или редактирование выполняется
         // свойство открытия popup menu окна добавлнени/редактирования
         private bool _isOpenDialog = false;
@@ -39,47 +40,40 @@ namespace CommandRecognition.UI.ViewModel
 
         private IDataServices _dataServices;
 
-
         public MainViewModel(IDataServices dataServices)
         {
             _dataServices = dataServices;
         }
 
-        public void Initialize(int userId)
+        public void Initialize()
         {
-            _userId = userId;
-
             GetRecCommand();
 
             try
             {
                 _culture = new CultureInfo("ru-ru");
                 _sre = new SpeechRecognitionEngine(_culture);
-
                 // Setup event handlers
                 _sre.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(sr_SpeechRecognized);
-
                 // select input source
                 _sre.SetInputToDefaultAudioDevice();
-
                 // load grammar
                 _sre.LoadGrammar(CreateSampleGrammarStart());
                 _sre.LoadGrammar(CreateSampleGrammarClose());
-
                 // start recognition
                 _sre.RecognizeAsync(RecognizeMode.Multiple);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-
             }
         }
 
         private void GetRecCommand()
         {
-            var data = _dataServices.GetRecCommand(_userId) as List<VoiceCommand>;
-            if (data.Count > 0)
+            RecCommand.Clear();
+            var data = _dataServices.GetRecCommand(UserId) as List<VoiceCommand>;
+            if (data.Any())
             {
                 foreach (var item in data)
                 {
@@ -87,7 +81,6 @@ namespace CommandRecognition.UI.ViewModel
                     programs.Add(new SemanticResultValue(item.Command, item.Path));
                 }
             }
-
         }
 
         private ICommand _openDialog;
@@ -97,8 +90,7 @@ namespace CommandRecognition.UI.ViewModel
             {
                 return _openDialog ?? (_openDialog = new DelegateCommand<object>(a =>
                 {
-                    if (a.ToString() == "edit")
-                        Flag = true;
+                    if (a.ToString() == "edit") { Flag = true; }
                     else
                     {
                         Flag = false;
@@ -115,11 +107,22 @@ namespace CommandRecognition.UI.ViewModel
         private ICommand _editItem;
         public ICommand EditItem { get { return _editItem ?? (_editItem = new DelegateCommand<object>(a => OnEditItem())); } }
 
+        private ICommand _openSettings;
+        public ICommand OpenSettings { get { return _openSettings ?? (_openSettings = new DelegateCommand<object>(a => OnOpenSettings())); } }
+
+        private void OnOpenSettings()
+        {
+            var settings = new SettingsWindow();
+            settings.DataContext = IocKernel.IocKernel.Get<SettingsViewModel>();
+            settings.ShowDialog();
+        }
+
         private void OnDeleteItem()
         {
             if (SelectedRecCommand == null) return;
             _dataServices.DeleteRecCommand(SelectedRecCommand.Id);
-            RecCommand.Remove(SelectedRecCommand);
+            // RecCommand.Remove(SelectedRecCommand);
+            Initialize();
         }
 
         private void OnEditItem()
@@ -127,14 +130,15 @@ namespace CommandRecognition.UI.ViewModel
             if (Flag == true)
             {
                 _dataServices.UpdateRecCommand(SelectedRecCommand);
-
-                RecCommand[SelectedIndex].Command = SelectedRecCommand.Command;
-                RecCommand[SelectedIndex].Path = SelectedRecCommand.Path;
+                //RecCommand[SelectedIndex].Command = SelectedRecCommand.Command;
+                //RecCommand[SelectedIndex].Path = SelectedRecCommand.Path;
+                Initialize();
             }
             else
             {
                 SelectedRecCommand.UserId = _userId;
                 var recCommand = _dataServices.AddRecCommand(SelectedRecCommand);
+                programs.Add(new SemanticResultValue(recCommand.Command, recCommand.Path));
                 RecCommand.Add(recCommand);
             }
 
@@ -143,11 +147,8 @@ namespace CommandRecognition.UI.ViewModel
         }
 
         /*
-         * 
-         * 
-         * 
+         * Блок распознования
          */
-
         
         private Grammar CreateSampleGrammarStart()
         {
@@ -169,7 +170,7 @@ namespace CommandRecognition.UI.ViewModel
 
         private void sr_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            if (e.Result.Confidence < 0.1f)
+            if (e.Result.Confidence < 0.35f)
                 return;
 
             foreach (var s in e.Result.Semantics)
