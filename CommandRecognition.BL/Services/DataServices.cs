@@ -1,7 +1,10 @@
 ﻿using CommandRecognition.BL.Interfaces;
 using CommandRecognition.CORE;
 using CommandRecognition.DAL.Interface;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace CommandRecognition.BL.Services
 {
@@ -34,6 +37,29 @@ namespace CommandRecognition.BL.Services
         public void UpdateRecCommand(VoiceCommand editRecCommand)
         {
             _unitOfWork.Repository<VoiceCommand>().Update(editRecCommand);
+        }
+
+        public void AddDefaultDataForUser(int userId)
+        {
+            string fileName = "data.json";
+
+            if (File.Exists(fileName))
+            {
+                var json = File.ReadAllText(fileName);
+                var temp = JsonConvert.DeserializeObject<IEnumerable<VoiceCommand>>(json);
+                if (temp.Any())
+                {
+                    foreach (var item in temp)
+                    {
+                        _unitOfWork.Repository<VoiceCommand>().Insert(new VoiceCommand
+                        {
+                            UserId = userId,
+                            Command = item.Command, 
+                            Path = item.Path
+                        });
+                    }
+                }
+            }
         }
     }
 }

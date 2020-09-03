@@ -15,9 +15,9 @@ namespace CommandRecognition.BL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public (bool status, string message) CreateAccount(string login, string pass, string confPass, string question, string answer)
+        public (bool status, string message, int? id) CreateAccount(string login, string pass, string confPass, string question, string answer)
         {
-            if (!CheckFields(login)) return (false, "Введите логин!");
+            if (!CheckFields(login)) return (false, "Введите логин!", null);
 
             var user = _unitOfWork.Repository<User>().Get(x => x.Login == login);
 
@@ -35,21 +35,23 @@ namespace CommandRecognition.BL.Services
 
                         var hashPass = HashPassword(login, pass);
 
-                        _unitOfWork.Repository<User>().Insert(new User
+                        var userApp = new User
                         {
                             Login = login,
                             Password = hashPass,
                             Question = question,
                             Answer = answer
-                        });
+                        };
 
-                        return (true, "Вы успешно зарегистрированы!");
+                        _unitOfWork.Repository<User>().Insert(userApp);
+
+                        return (true, "Вы успешно зарегистрированы!", userApp.Id);
                     }
-                    else return (false, "Заполните поля \"Контрольный вопрос\" и \"Ответ на контрольный вопрос\"!");
+                    else return (false, "Заполните поля \"Контрольный вопрос\" и \"Ответ на контрольный вопрос\"!", null);
                 }
-                else return (false, "Пароли не совпадают!");
+                else return (false, "Пароли не совпадают!", null);
             }
-            else return (false, "Данный логин уже используется!");
+            else return (false, "Данный логин уже используется!", null);
         }
 
         public User AutorizeUser(string login, string password)

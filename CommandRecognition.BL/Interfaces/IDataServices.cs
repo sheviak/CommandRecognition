@@ -9,5 +9,6 @@ namespace CommandRecognition.BL.Interfaces
         VoiceCommand AddRecCommand(VoiceCommand recCommand);
         void DeleteRecCommand(int id);
         void UpdateRecCommand(VoiceCommand recCommand);
+        void AddDefaultDataForUser(int userId);
     }
 }

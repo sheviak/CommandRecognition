@@ -72,6 +72,7 @@ namespace CommandRecognition.UI.ViewModel
         private void GetRecCommand()
         {
             RecCommand.Clear();
+            programs = new Choices();
             var data = _dataServices.GetRecCommand(UserId) as List<VoiceCommand>;
             if (data.Any())
             {
@@ -132,15 +133,16 @@ namespace CommandRecognition.UI.ViewModel
                 _dataServices.UpdateRecCommand(SelectedRecCommand);
                 //RecCommand[SelectedIndex].Command = SelectedRecCommand.Command;
                 //RecCommand[SelectedIndex].Path = SelectedRecCommand.Path;
-                Initialize();
             }
             else
             {
                 SelectedRecCommand.UserId = _userId;
                 var recCommand = _dataServices.AddRecCommand(SelectedRecCommand);
-                programs.Add(new SemanticResultValue(recCommand.Command, recCommand.Path));
-                RecCommand.Add(recCommand);
+                //programs.Add(new SemanticResultValue(recCommand.Command, recCommand.Path));
+                //RecCommand.Add(recCommand);
             }
+
+            Initialize();
 
             Flag = null;
             IsOpenDialog = false;
@@ -170,7 +172,7 @@ namespace CommandRecognition.UI.ViewModel
 
         private void sr_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            if (e.Result.Confidence < 0.35f)
+            if (e.Result.Confidence < 0.3f)
                 return;
 
             foreach (var s in e.Result.Semantics)

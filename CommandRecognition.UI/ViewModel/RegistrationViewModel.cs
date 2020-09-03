@@ -17,9 +17,12 @@ namespace CommandRecognition.UI.ViewModel
         public string Answer { get => _answer; set => SetField(ref _answer, value); }
 
         private IAccountServices _accountServices;
-        public RegistrationViewModel(IAccountServices accountServices)
+        private IDataServices _dataServices;
+
+        public RegistrationViewModel(IAccountServices accountServices, IDataServices dataServices)
         {
             _accountServices = accountServices;
+            _dataServices = dataServices;
         }
 
         private ICommand _registerCommand;
@@ -27,7 +30,7 @@ namespace CommandRecognition.UI.ViewModel
 
         private async void OnRegisterCommand(object item)
         {
-            var (status, message) = await Task.Run(() =>
+            var (status, message, id) = await Task.Run(() =>
             {
                 var parameters = item as object[];
                 var pass1 = parameters[0] as PasswordBox;
@@ -38,6 +41,7 @@ namespace CommandRecognition.UI.ViewModel
 
             if (status)
             {
+                _dataServices.AddDefaultDataForUser((int)id);
                 MessageBox.Show(message);
                 this.CloseAction();
             }
